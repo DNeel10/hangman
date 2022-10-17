@@ -1,10 +1,23 @@
+require_relative './display'
+
 class Game
-attr_accessor :dictionary, :secret_word
+  attr_accessor  :secret_word, :round
+  attr_reader :dictionary
+  include Display
 
   def initialize
 
     @dictionary = 'dictionary.txt'
-    @secret_word = get_secret_word
+    @secret_word = ''
+    @guesses = 6
+    @correct_letters = []
+    @incorrect_letters = []
+  end
+
+  # play a new game or load a saved game
+  def play
+    display_game
+    game_mode
   end
 
   private
@@ -19,18 +32,24 @@ attr_accessor :dictionary, :secret_word
     end
   end
 
+  def new_game    
+    @secret_word = get_secret_word
+    while @guesses != 0 do
+      # guess_letter function goes here
+      puts "Guess a letter: "
+      puts @secret_word
+      @guesses -= 1
+      puts "Guesses left: #{@guesses}"
+    end
+  end
 
-  # Get random int and traverse through the whole file until it gets to the int
-  # def get_secret_word
-  #   File.open(@dictionary, 'r') do |file| 
-  #     rand_int = rand(file.readlines.length)
-  #     file.rewind
-  #     file.readlines.each_with_index do |word, i|
-  #       return word if i == rand_int
-  #     end
-  #   end
-  # end
+  def guess_letter
+  end
+
+  def game_mode
+    mode = gets.chomp
+    new_game if mode == '1'
+    puts "load_game"
+  end
 end
 
-
-puts Game.new.secret_word
