@@ -25,4 +25,20 @@ module Display
 
     HEREDOC
   end
+
+  def display_guess_letter
+    <<~HEREDOC
+
+    Please guess a letter:
+
+    HEREDOC
+  end
+
+  def display_guess_error
+    <<~HEREDOC
+
+    Please make a valid selection (a-z)
+
+    HEREDOC
+  end
 end
