@@ -39,24 +39,29 @@ class Game
   def new_game
     @secret_word = get_secret_word
     clear_guesses
-    create_board
     loop do
-      guess_letter
-      check_guess
-      create_board
-      puts "#{@correct_letters}"
-      puts "#{@incorrect_letters}"
-      puts @secret_word
-
-      puts "Guesses left: #{@guesses_remaining}"
+      play_round
+      break if game_won? || game_over?
+      
     end
+  end
+
+  def play_round
+    create_board
+    guess_letter
+    check_guess
+    puts game_won?
+    puts "#{@incorrect_letters}"
+    puts @secret_word
+    
+    puts "Guesses left: #{@guesses_remaining}"
   end
 
   # user input for each round and pass back the input if it matches the regex
   def get_user_input
     loop do
       letter = gets.chomp
-      letter.match(/^[a-z]$|^save$|^reset$/) ? (return letter) : (puts display_guess_error)
+      letter.match(/^[a-z]$|^save$|^reset$|^exit$/i) ? (return letter) : (puts display_guess_error)
     end
   end
 
@@ -64,9 +69,9 @@ class Game
   def guess_letter
     loop do
       puts display_guess_letter
-      @guess = get_user_input
-      break if @guess.length >= 1
-      break if @letters.include?(@guess.downcase)
+      @guess = get_user_input.downcase
+      break if @guess.length > 1
+      break if @letters.include?(@guess)
 
       puts display_guess_error
     end
@@ -80,17 +85,29 @@ class Game
   end
 
   def check_guess
-    if @secret_word.include?(@guess)
+    if @incorrect_letters.include?(@guess) || @correct_letters.include?(@guess)
+      guess_letter
+    elsif @secret_word.include?(@guess)
       @correct_letters << @guess
     elsif @guess == 'save'
       save_game
     elsif @guess == 'reset'
       puts display_rules
       new_game
+    elsif @guess == 'exit'
+      exit
     else
       @incorrect_letters << @guess
       @guesses_remaining -= 1
     end
+  end
+
+  def game_won?
+    @secret_word.split('').all? { |letter| @correct_letters.include?(letter) }
+  end
+
+  def game_over?
+    @guesses_remaining == 0
   end
 
   def save_game
