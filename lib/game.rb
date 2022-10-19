@@ -1,24 +1,30 @@
 require_relative './display'
+require_relative './serialize'
+require 'yaml'
 
 class Game
   attr_accessor  :secret_word, :round
   attr_reader :dictionary
 
   include Display
+  include Serialize
 
   def initialize
 
     @dictionary = 'dictionary.txt'
     @secret_word = ''
-    @guesses_remaining = 6
+    @guesses_remaining = 8
     @guess = ''
     @correct_letters = []
     @incorrect_letters = []
     @letters = ('a'..'z').to_a
+    play
   end
 
   # play a new game or load a saved game
   def play
+    system("clear")
+
     display_game
     game_mode
   end
@@ -39,28 +45,39 @@ class Game
   def new_game
     @secret_word = get_secret_word
     clear_guesses
+    player_turn
+    win_screen if game_won?
+    lose_screen if game_over?
+  end
+
+  def player_turn
     loop do
       play_round
       break if game_won? || game_over?
-      
     end
+
   end
 
   def play_round
+    system("clear") 
+    show_incorrect_guesses if @guesses_remaining < 8
+    puts ""
+    puts "Guesses left: #{@guesses_remaining}"
     create_board
+    show_game_saved
     guess_letter
     check_guess
-    puts game_won?
-    puts "#{@incorrect_letters}"
-    puts @secret_word
-    
-    puts "Guesses left: #{@guesses_remaining}"
+    puts <<~HEREDOC
+
+
+
+    HEREDOC
   end
 
   # user input for each round and pass back the input if it matches the regex
   def get_user_input
     loop do
-      letter = gets.chomp
+      letter = gets.chomp.downcase
       letter.match(/^[a-z]$|^save$|^reset$|^exit$/i) ? (return letter) : (puts display_guess_error)
     end
   end
@@ -68,8 +85,8 @@ class Game
   # gets user input and ensures it is a valid letter and that an input was given
   def guess_letter
     loop do
-      puts display_guess_letter
-      @guess = get_user_input.downcase
+      print display_guess_letter
+      @guess = get_user_input
       break if @guess.length > 1
       break if @letters.include?(@guess)
 
@@ -81,19 +98,16 @@ class Game
   def game_mode
     mode = gets.chomp
     new_game if mode == '1'
-    puts "load_game" if mode == '2'
+    load_game if mode == '2'
   end
 
   def check_guess
     if @incorrect_letters.include?(@guess) || @correct_letters.include?(@guess)
-      guess_letter
+      puts display_existing_guess_error
     elsif @secret_word.include?(@guess)
       @correct_letters << @guess
     elsif @guess == 'save'
       save_game
-    elsif @guess == 'reset'
-      puts display_rules
-      new_game
     elsif @guess == 'exit'
       exit
     else
@@ -110,10 +124,6 @@ class Game
     @guesses_remaining == 0
   end
 
-  def save_game
-    puts "Save game"
-  end
-
   def clear_guesses
     @correct_letters = []
     @incorrect_letters = []
@@ -128,6 +138,55 @@ class Game
         print "_ "
       end
     end
-    print "\n"
+    puts "\n"
+    puts "\n"
   end
+
+  def show_incorrect_guesses
+    print "Incorrect Guesses: "
+    @incorrect_letters.each do |letter|
+      print "#{letter} "
+    end
+    puts "\n"
+    puts "\n"
+  end
+
+  def existing_guess?
+    @incorrect_letters.include?(@guess) || @correct_letters.include?(@guess)
+  end
+
+  def win_screen
+    system("clear")
+    puts "Congratulations!!!"
+    puts "You won the game with #{@guesses_remaining} guesses remaining!!"
+    puts "The word was: #{secret_word}"
+    puts ""
+    puts "Would you like to play again? [y/n]?"
+    replay = get_user_input
+    replay == 'y' ? reset_game : exit
+  end
+
+  def lose_screen
+    system("clear")
+    puts "Oh No!"
+    puts "You lost the game"
+    puts "The word was: #{secret_word}"
+    puts ""
+    puts "Better luck next time!"
+    puts "Would you like to play again? [y/n]?"
+    replay = get_user_input
+    replay == 'y' ? reset_game : exit
+  end
+
+  def reset_game
+    clear_guesses
+    @guesses_remaining = 8
+    play
+  end
+
+  def show_game_saved
+    puts "Your game has been saved. Filename: #{@filename}" unless @filename == nil
+    puts ""
+  end
+
 end
