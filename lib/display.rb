@@ -56,4 +56,53 @@ module Display
 
     HEREDOC
   end
+  def display_win_screen
+    system("clear")
+    <<~HEREDOC
+    Congratulations!!!
+
+    You wont he game with #{@guesses_remaining} guesses remaining!!
+    The word was: #{secret_word}
+
+    Would you like to play again? [y/n]
+    HEREDOC
+  end
+
+  def display_lose_screen
+    system("clear")
+    <<~HEREDOC
+
+    Oh No!
+    You lost the game
+
+    The secret word was #{secret_word}
+
+    Better luck next time!
+    Would you like to play again? [y/n]
+    HEREDOC
+  end
+
+  def empty_space_four
+    <<~HEREDOC
+
+
+
+
+    HEREDOC
+  end
+
+  def display_guesses_remaining
+    <<~HEREDOC
+
+    Guesses left: #{@guesses_remaining}
+    
+    HEREDOC
+  end
+
+  def empty_space_two
+    <<~HEREDOC
+
+
+    HEREDOC
+  end
 end

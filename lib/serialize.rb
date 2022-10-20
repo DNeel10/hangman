@@ -27,7 +27,7 @@ module Serialize
   end
 
   def load_game_file
-    data = YAML.safe_load(File.read('saved_files/angry_bird_0.yaml'))
+    data = YAML.safe_load(File.read(@selection))
     @dictionary = data['dictionary']
     @secret_word = data['secret_word']
     @guesses_remaining = data['guesses_remaining']
@@ -38,9 +38,27 @@ module Serialize
   end
 
   def load_game
+    find_game_file
+    select_game_file
     load_game_file
     player_turn
     win_screen if game_won?
     lose_screen if game_over?
   end
+
+  # TODO: Create view for user to see list of files they can chose from
+  def find_game_file
+    @file_arr = Dir.glob('saved_files/*.yaml')
+    puts 'Available Game Files:'
+    @file_arr.each_with_index do |file, i|
+      puts "#{i + 1}: #{file.split('/')[1]}"
+    end
+  end
+
+  # TODO: Allow client to select a file from the list (number input)
+  def select_game_file
+    input = gets.chomp.to_i
+    @selection = @file_arr[input - 1]
+  end
+  # TODO: Use the user's selection to fill the load_game_file read method
 end

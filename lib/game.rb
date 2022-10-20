@@ -61,17 +61,12 @@ class Game
   def play_round
     system("clear") 
     show_incorrect_guesses if @guesses_remaining < 8
-    puts ""
-    puts "Guesses left: #{@guesses_remaining}"
+    puts display_guesses_remaining
     create_board
-    show_game_saved
+    show_game_saved if @guess == 'save'
     guess_letter
     check_guess
-    puts <<~HEREDOC
-
-
-
-    HEREDOC
+    puts empty_space_four
   end
 
   # user input for each round and pass back the input if it matches the regex
@@ -138,8 +133,7 @@ class Game
         print "_ "
       end
     end
-    puts "\n"
-    puts "\n"
+    puts empty_space_two
   end
 
   def show_incorrect_guesses
@@ -147,8 +141,7 @@ class Game
     @incorrect_letters.each do |letter|
       print "#{letter} "
     end
-    puts "\n"
-    puts "\n"
+    puts empty_space_two
   end
 
   def existing_guess?
@@ -156,26 +149,13 @@ class Game
   end
 
   def win_screen
-    system("clear")
-    puts "Congratulations!!!"
-    puts "You won the game with #{@guesses_remaining} guesses remaining!!"
-    puts "The word was: #{secret_word}"
-    puts ""
-    puts "Would you like to play again? [y/n]?"
-    replay = get_user_input
-    replay == 'y' ? reset_game : exit
+    puts display_win_screen
+    replay_game
   end
 
   def lose_screen
-    system("clear")
-    puts "Oh No!"
-    puts "You lost the game"
-    puts "The word was: #{secret_word}"
-    puts ""
-    puts "Better luck next time!"
-    puts "Would you like to play again? [y/n]?"
-    replay = get_user_input
-    replay == 'y' ? reset_game : exit
+    puts display_lose_screen
+    replay_game
   end
 
   def reset_game
@@ -185,8 +165,12 @@ class Game
   end
 
   def show_game_saved
-    puts "Your game has been saved. Filename: #{@filename}" unless @filename == nil
+    puts "Your game has been saved. Filename: #{@filename}"
     puts ""
   end
 
+  def replay_game
+    replay = get_user_input
+    replay == 'y' ? reset_game : exit
+  end
 end
