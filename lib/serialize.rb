@@ -61,5 +61,4 @@ module Serialize
     input = gets.chomp.to_i
     @selection = @file_arr[input - 1]
   end
-
 end
