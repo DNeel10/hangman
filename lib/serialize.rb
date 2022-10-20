@@ -42,6 +42,7 @@ module Serialize
     select_game_file
     load_game_file
     player_turn
+    File.delete("saved_files/#{@filename}") if File.exist?("saved_files/#{@filename}")
     win_screen if game_won?
     lose_screen if game_over?
   end
