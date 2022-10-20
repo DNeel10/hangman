@@ -42,12 +42,12 @@ module Serialize
     select_game_file
     load_game_file
     player_turn
-    File.delete("saved_files/#{@filename}") if File.exist?("saved_files/#{@filename}")
+    File.delete(@selection) if File.exist?(@selection)
     win_screen if game_won?
     lose_screen if game_over?
   end
 
-  # TODO: Create view for user to see list of files they can chose from
+  # Create view for user to see list of files they can chose from
   def find_game_file
     @file_arr = Dir.glob('saved_files/*.yaml')
     puts 'Available Game Files:'
@@ -56,10 +56,10 @@ module Serialize
     end
   end
 
-  # TODO: Allow client to select a file from the list (number input)
+  # Allow client to select a file from the list (number input)
   def select_game_file
     input = gets.chomp.to_i
     @selection = @file_arr[input - 1]
   end
-  # TODO: Use the user's selection to fill the load_game_file read method
+
 end
