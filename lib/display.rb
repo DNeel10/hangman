@@ -61,7 +61,7 @@ module Display
     <<~HEREDOC
     Congratulations!!!
 
-    You wont he game with #{@guesses_remaining} guesses remaining!!
+    You won the game with #{@guesses_remaining} guesses remaining!!
     The word was: #{secret_word}
 
     Would you like to play again? [y/n]

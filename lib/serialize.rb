@@ -54,6 +54,8 @@ module Serialize
     @file_arr.each_with_index do |file, i|
       puts "#{i + 1}: #{file.split('/')[1]}"
     end
+    puts ''
+    print 'Enter a file number: '
   end
 
   # Allow client to select a file from the list (number input)
